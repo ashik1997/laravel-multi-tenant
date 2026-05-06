@@ -1,59 +1,254 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🧾 Laravel POS SaaS (Multi-Tenant)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Multi-tenant Point of Sale (POS) system built with Laravel + Stancl Tenancy (separate database per tenant)
 
-## About Laravel
+![Laravel](https://img.shields.io/badge/Laravel-12-red)
+![PHP](https://img.shields.io/badge/PHP-8.2-blue)
+![Tenancy](https://img.shields.io/badge/Tenancy-stancl-green)
+![License](https://img.shields.io/badge/license-MIT-brightgreen)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* ✅ Multi-tenant architecture (separate DB per tenant)
+* ✅ Auto database creation per tenant
+* ✅ Subdomain-based tenant system
+* ✅ POS system (products, orders, customers)
+* ✅ Central admin panel
+* ✅ Secure tenant isolation
+* ✅ Laravel Blade UI
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🏗️ Architecture
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🔹 Central App (Main Domain)
 
-## Laravel Sponsors
+* Manages tenants
+* Handles signup/login
+* Stores:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+  * tenants
+  * domains
 
-### Premium Partners
+### 🔹 Tenant App (Subdomain)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Each tenant has:
 
-## Contributing
+* Separate database
+* POS data:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+  * products
+  * orders
+  * customers
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🌐 Domain Structure
 
-## Security Vulnerabilities
+```
+yourpos.com              → Main App
+shop1.yourpos.com        → Tenant 1
+shop2.yourpos.com        → Tenant 2
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## ⚙️ Installation
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/your-username/pos-saas.git
+cd pos-saas
+```
+
+---
+
+### 2️⃣ Install Dependencies
+
+```bash
+composer install
+```
+
+---
+
+### 3️⃣ Setup Environment
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Edit `.env`:
+
+```
+DB_CONNECTION=mysql
+DB_DATABASE=main_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+---
+
+### 4️⃣ Install Tenancy
+
+```bash
+composer require stancl/tenancy
+php artisan tenancy:install
+php artisan migrate
+```
+
+---
+
+### 5️⃣ Configure Database
+
+`config/database.php`:
+
+```php
+'default' => 'mysql',
+
+'connections' => [
+    'mysql' => [...], // central DB
+    'tenant' => [...], // tenant DB
+]
+```
+
+---
+
+### 6️⃣ Configure Tenancy
+
+`config/tenancy.php`:
+
+```php
+'central_domains' => [
+    '127.0.0.1',
+    'localhost',
+],
+```
+
+---
+
+## 🧪 Local Development
+
+Edit your hosts file:
+
+```
+127.0.0.1 yourpos.com
+127.0.0.1 shop1.localhost
+127.0.0.1 shop2.localhost
+```
+
+---
+
+## 🏪 Create Tenant
+
+### Endpoint
+
+```
+POST /create-tenant
+```
+
+### Request Body
+
+```json
+{
+  "name": "shop1",
+  "email": "shop1@gmail.com",
+  "password": "123456"
+}
+```
+
+---
+
+## ⚡ Auto Database Setup
+
+Handled using event listener:
+
+```php
+Event::listen(TenantCreated::class, function ($event) {
+    dispatch(new CreateDatabase($event->tenant));
+    dispatch(new MigrateDatabase($event->tenant));
+});
+```
+
+---
+
+## 🗂️ Tenant Migrations
+
+Directory:
+
+```
+database/migrations/tenant
+```
+
+Example:
+
+```php
+Schema::create('products', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->double('price');
+    $table->timestamps();
+});
+```
+
+---
+
+## ▶️ Run Project
+
+```bash
+php artisan serve
+php artisan queue:work
+php artisan tenants:migrate
+php artisan optimize:clear
+```
+
+---
+
+## ⚠️ Important Notes
+
+* ❌ Avoid raw DB queries (use Eloquent)
+* ❌ Do not store tenant data in central DB
+* ✅ Always use subdomain for tenant isolation
+* ✅ Run queue worker for DB creation
+
+---
+
+## 🔐 Security
+
+* Separate database per tenant
+* No cross-tenant access
+* Password hashing enabled
+
+---
+
+## 📦 Roadmap
+
+* 💳 Subscription system (Stripe / bKash)
+* 👥 Role management (Admin / Cashier)
+* 📊 Reports dashboard
+* 🌐 Custom domains per tenant
+* 📱 API support
+
+---
+
+## 👨‍💻 Author
+
+**Ashik**
+Laravel SaaS Developer
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+## ⭐ Support
+
+If you like this project, give it a ⭐ on GitHub!
+
+---

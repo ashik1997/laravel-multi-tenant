@@ -22,18 +22,17 @@ class CreateTenantsTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('domain')->unique();
-            $table->string('database')->unique();
+            $table->string('database');
             $table->string('driver')->default('mysql');
             $table->string('host')->default('127.0.0.1');
-            $table->integer('port')->default(3306);
+            $table->string('port')->default('3306');
             $table->string('dbusername')->default('root');
             $table->string('dbpassword')->default('');
             $table->string('charset')->default('utf8mb4');
             $table->string('collation')->default('utf8mb4_unicode_ci');
 
-
-            $table->timestamps();
             $table->json('data')->nullable();
+            $table->timestamps();
         });
     }
 

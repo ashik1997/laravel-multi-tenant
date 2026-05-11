@@ -7,6 +7,12 @@
             'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10',
         ],
         [
+            'label' => 'Tenants',
+            'route' => 'tenants.index',
+            'active' => request()->routeIs('tenants.*'),
+            'icon' => 'M4 6h16M4 12h16M4 18h16',
+        ],
+        [
             'label' => 'Profile',
             'route' => 'profile.edit',
             'active' => request()->routeIs('profile.edit'),
@@ -19,7 +25,7 @@
     <div class="flex h-16 items-center gap-3 border-b border-gray-100 px-6">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
             <x-application-logo class="h-9 w-auto fill-current text-gray-800" />
-            <span class="text-base font-semibold text-gray-900">{{ config('app.name', 'Laravel') }}</span>
+            <span class="text-base font-semibold text-gray-900">{{ config('app.name', 'Laravel') }} Admin</span>
         </a>
     </div>
 
@@ -42,7 +48,7 @@
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="w-full rounded-md border border-gray-300 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <button type="submit" class="w-full rounded-md bg-gray-900 px-3 py-2 text-left text-sm font-medium text-white hover:bg-gray-800">
                 Log Out
             </button>
         </form>

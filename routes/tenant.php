@@ -23,7 +23,9 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::get('/', function () {
+    // Tenant routes should not override the central app homepage at '/'.
+    // Change this to a tenant-specific path if you want a custom tenant landing page.
+    Route::get('/tenant', function () {
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
 });

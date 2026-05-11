@@ -18,15 +18,15 @@
         </style>
     </head>
     <body class="font-sans antialiased">
-        <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-blue-50">
+        <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100">
             <div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-30 bg-gray-900/50 lg:hidden" @click="sidebarOpen = false"></div>
 
             <div class="fixed inset-y-0 left-0 z-40 hidden lg:block">
-                @include('tenant.layouts.sidebar')
+                @include('backend.layouts.sidebar')
             </div>
 
             <div x-show="sidebarOpen" x-cloak class="fixed inset-y-0 left-0 z-40 lg:hidden">
-                @include('tenant.layouts.sidebar')
+                @include('backend.layouts.sidebar')
             </div>
 
             <div class="lg:pl-64">
@@ -43,19 +43,40 @@
                             @isset($header)
                                 {{ $header }}
                             @else
-                                <h1 class="text-lg font-semibold text-gray-900">{{ config('app.name', 'Laravel') }}</h1>
+                                <h1 class="text-lg font-semibold text-gray-900">{{ config('app.name', 'Laravel') }} - Backend</h1>
                             @endisset
                         </div>
 
                         <div class="hidden text-right sm:block">
-                            <div class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</div>
-                            <div class="text-xs text-gray-500">{{ Auth::user()->email }}</div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="font-medium text-gray-900">{{ Auth::user()->name }}</span>
+                                </div>
+
+                                <form method="POST" action="{{ route('logout') }}" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-sm text-gray-500 hover:text-gray-700">Log Out</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 sm:hidden">
+                            <div class="text-sm text-gray-500">
+                                <span class="font-medium text-gray-900">{{ Auth::user()->name }}</span>
+                            </div>
+
+                            <form method="POST" action="{{ route('logout') }}" class="inline">
+                                @csrf
+                                <button type="submit" class="text-sm text-gray-500 hover:text-gray-700">Log Out</button>
+                            </form>
                         </div>
                     </div>
                 </header>
 
-                <main>
-                    {{ $slot }}
+                <main class="py-10">
+                    <div class="px-4 sm:px-6 lg:px-8">
+                        {{ $slot }}
+                    </div>
                 </main>
             </div>
         </div>

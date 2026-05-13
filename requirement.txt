@@ -1,0 +1,113 @@
+build Laravel multi-tenant architecture useand Billing System
+Tenant Main Admin
+
+1. Create new tenants
+2. Edit tenants
+3. Delete tenants
+
+Each tenant will install:
+
+composer require laravel/cashier
+
+Backend
+
+* When a user registers, create the user automatically in the tenant database.
+
+
+
+------------------------------------Changes------------------------------------
+What changed
+composer.json
+
+added laravel/cashier dependency.
+services.php
+
+added Stripe configuration.
+Tenant.php
+
+added Billable support for tenant billing.
+added Cashier billing columns to tenant fillable/custom columns.
+User.php
+
+added Billable support so tenant DB users can use Cashier.
+TenantController.php
+
+added tenant deletion support.
+tenant provisioning now creates the tenant database and migrates it.
+tenant admin user is now created automatically inside the tenant database after provisioning.
+web.php
+
+enabled destroy for tenant resource routes.
+added tenant billing routes.
+ensured tenant auth routes run under tenant middleware.
+TenantBillingController.php
+
+added subscription UI/controller endpoint for tenant billing.
+index.blade.php
+
+added a minimal tenant billing UI.
+2026_05_12_000000_create_tenant_users_table.php
+
+added tenant users table migration with Cashier fields.
+2026_05_12_000001_add_cashier_columns_to_tenants_table.php
+
+added Cashier billing columns to the central tenants table.
+TenantUserSeeder.php
+
+now seeds the tenant admin user into the tenant database after migrations.
+Next steps
+Run:
+
+composer update
+php artisan migrate
+php artisan tenants:migrate
+php artisan db:seed
+If you want, I can also add tenant billing plan definitions and Stripe frontend integration next.
+
+-sslcommerz
+-bkash, nagad, rocket, bank payment maual system
+
+✅ Added Manual Payment Gateway Support
+Implemented support for:
+
+sslcommerz
+bkash
+nagad
+rocket
+bank transfer/manual payment
+What changed
+billing.php
+
+Added gateways config for Stripe + manual gateways
+Added payment instructions for each gateway
+services.php
+
+Added placeholder config entries for sslcommerz, bkash, nagad, rocket, and bank
+Tenant.php
+
+Added payment_provider and payment_status to $fillable
+Added those columns to getCustomColumns()
+TenantBillingController.php
+
+Added gateway selection logic
+Stripe still creates a Cashier subscription
+Manual gateways store payment_provider and set payment_status to pending
+index.blade.php
+
+Added UI to choose Stripe or manual payment methods
+Stripe card form is shown only when Stripe is selected
+Manual methods show instructions dynamically
+2026_05_12_000002_add_payment_provider_columns_to_tenants_table.php
+
+Added payment_provider and payment_status columns to tenants
+Validation
+php -l app\Http\Controllers\TenantBillingController.php — no syntax errors
+php -l app\Models\Tenant.php — no syntax errors
+Next step
+Run:
+
+php artisan migrate
+If you want, I can also wire real SSLCommerz / bKash / Nagad / Rocket API flows and bank payment confirmation handling.
+
+
+

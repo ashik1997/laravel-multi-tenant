@@ -12,7 +12,24 @@ class TenantMiddleware
             $query->where('domain', $request->getHost());
         })->first();
 
-        if (!$tenant) {
+        if (! $tenant && app()->environment('local')) {
+            $tenantIdentifier = $request->query('tenant');
+
+            if ($tenantIdentifier) {
+                $tenant = Tenant::where('id', $tenantIdentifier)
+                    ->orWhere('name', $tenantIdentifier)
+                    ->orWhereHas('domains', function ($query) use ($tenantIdentifier) {
+                        $query->where('domain', $tenantIdentifier);
+                    })
+                    ->first();
+            }
+
+            if (! $tenant && Tenant::count() === 1) {
+                $tenant = Tenant::first();
+            }
+        }
+
+        if (! $tenant) {
             abort(404, 'Tenant not found');
         }
 

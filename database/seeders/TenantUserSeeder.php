@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class TenantUserSeeder extends Seeder
@@ -48,5 +49,23 @@ class TenantUserSeeder extends Seeder
         Artisan::call('tenants:migrate', [
             '--tenants' => [$tenant->id],
         ]);
+
+        tenancy()->initialize($tenant);
+
+        try {
+            DB::table('users')->updateOrInsert(
+                ['email' => $tenant->email],
+                [
+                    'name' => $tenant->name,
+                    'email' => $tenant->email,
+                    'password' => $tenant->password,
+                    'remember_token' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            );
+        } finally {
+            tenancy()->end();
+        }
     }
 }

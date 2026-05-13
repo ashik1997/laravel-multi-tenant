@@ -19,6 +19,14 @@
 * ✅ Secure tenant isolation
 * ✅ Laravel Blade UI
 
+##new features
+✅ Multiple domain support
+✅ Per-domain database
+✅ Per-domain FTP
+✅ Per-domain uploads
+✅ Shared Laravel codebase
+✅ Dynamic tenant switching
+
 ---
 
 ## 🏗️ Architecture

@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -15,7 +16,7 @@ class TenantController extends Controller
     public function index(): View
     {
         return view('tenant.tenants.index', [
-            'tenants' => Tenant::latest()->paginate(10),
+            'tenants' => Tenant::query()->orderByDesc('created_at')->paginate(10),
         ]);
     }
 
@@ -30,7 +31,8 @@ class TenantController extends Controller
         $data['id'] = $this->tenantIdFromName($data['name']);
         $data['domain'] = $data['domain'] ?: $data['id'] . '.localhost';
         $data['database'] = $data['database'] ?: 'tenant_' . $data['id'];
-        $data['password'] = Hash::make($data['password']);
+        $plainPassword = $data['password'];
+        $data['password'] = Hash::make($plainPassword);
 
         if (Tenant::whereKey($data['id'])->exists()) {
             return back()
@@ -44,7 +46,7 @@ class TenantController extends Controller
             'domain' => $tenant->domain,
         ]);
 
-        $this->provisionTenantDatabase($tenant);
+        $this->provisionTenantDatabase($tenant, $plainPassword);
 
         return redirect()
             ->route('tenants.index')
@@ -71,8 +73,11 @@ class TenantController extends Controller
         $data['domain'] = $data['domain'] ?: $tenant->domain;
         $data['database'] = $data['database'] ?: $tenant->database;
 
+        $plainPassword = null;
+
         if (! empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
+            $plainPassword = $data['password'];
+            $data['password'] = Hash::make($plainPassword);
         } else {
             unset($data['password']);
         }
@@ -84,14 +89,24 @@ class TenantController extends Controller
             ['domain' => $tenant->domain],
         );
 
-        $this->provisionTenantDatabase($tenant);
+        $this->provisionTenantDatabase($tenant, $plainPassword);
 
         return redirect()
             ->route('tenants.index')
             ->with('status', 'Tenant updated successfully.');
     }
 
-    private function provisionTenantDatabase(Tenant $tenant): void
+    public function destroy(Tenant $tenant): RedirectResponse
+    {
+        /** @var \Illuminate\Database\Eloquent\Model $tenant */
+        $tenant->delete();
+
+        return redirect()
+            ->route('tenants.index')
+            ->with('status', 'Tenant deleted successfully.');
+    }
+
+    private function provisionTenantDatabase(Tenant $tenant, ?string $plainPassword = null): void
     {
         $tenant->setInternal('db_name', $tenant->database);
         $tenant->save();
@@ -106,6 +121,31 @@ class TenantController extends Controller
         Artisan::call('tenants:migrate', [
             '--tenants' => [$tenant->id],
         ]);
+
+        if ($plainPassword !== null) {
+            $this->createTenantAdminUser($tenant, $plainPassword);
+        }
+    }
+
+    private function createTenantAdminUser(Tenant $tenant, string $plainPassword): void
+    {
+        tenancy()->initialize($tenant);
+
+        try {
+            DB::table('users')->updateOrInsert(
+                ['email' => $tenant->email],
+                [
+                    'name' => $tenant->name,
+                    'email' => $tenant->email,
+                    'password' => Hash::make($plainPassword),
+                    'remember_token' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            );
+        } finally {
+            tenancy()->end();
+        }
     }
 
     private function validatedTenantData(Request $request, ?Tenant $tenant = null): array

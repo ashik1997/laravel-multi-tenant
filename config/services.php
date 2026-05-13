@@ -22,6 +22,46 @@ return [
         'key' => env('RESEND_API_KEY'),
     ],
 
+    'stripe' => [
+        'model' => App\Models\Tenant::class,
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
+
+    'sslcommerz' => [
+        'url' => env('SSLCOMMERZ_URL'),
+        'store_id' => env('SSLCOMMERZ_STORE_ID'),
+        'store_password' => env('SSLCOMMERZ_STORE_PASSWORD'),
+    ],
+
+    'bkash' => [
+        'url' => env('BKASH_URL'),
+        'merchant_id' => env('BKASH_MERCHANT_ID'),
+        'username' => env('BKASH_USERNAME'),
+        'password' => env('BKASH_PASSWORD'),
+    ],
+
+    'nagad' => [
+        'url' => env('NAGAD_URL'),
+        'merchant_id' => env('NAGAD_MERCHANT_ID'),
+        'username' => env('NAGAD_USERNAME'),
+        'password' => env('NAGAD_PASSWORD'),
+    ],
+
+    'rocket' => [
+        'url' => env('ROCKET_URL'),
+        'merchant_id' => env('ROCKET_MERCHANT_ID'),
+        'username' => env('ROCKET_USERNAME'),
+        'password' => env('ROCKET_PASSWORD'),
+    ],
+
+    'bank' => [
+        'account_name' => env('BANK_ACCOUNT_NAME'),
+        'account_number' => env('BANK_ACCOUNT_NUMBER'),
+        'bank_name' => env('BANK_NAME'),
+        'branch' => env('BANK_BRANCH'),
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
